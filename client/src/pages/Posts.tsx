@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useCookies } from 'react-cookie';
 
 interface Post {
   id: number;
@@ -9,28 +10,31 @@ interface Post {
 const Posts: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [cookies] = useCookies(['token']); // Leer la cookie del token
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const response = await fetch('http://localhost:3000/api/posts', {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer development-token`, // Incluye el token con el prefijo "Bearer"
-            },
-          });
+          headers: {
+            Authorization: `Bearer ${cookies.token}`, // Enviar el token
+          },
+        });
+
         if (!response.ok) {
           throw new Error(`Error: ${response.status} ${response.statusText}`);
         }
-        const data: Post[] = await response.json();
+
+        const data = await response.json();
         setPosts(data);
       } catch (err: any) {
         setError(err.message);
       }
     };
-
-    fetchPosts();
-  }, []);
+    if (cookies.token) {
+        fetchPosts();
+    }
+  }, [cookies.token]);
 
   return (
     <div>

@@ -5,6 +5,7 @@ import { loadMiddlewares } from './utils/middlewareLoader.js';
 import postRoutes from './routes/postRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import authMiddleware from './middlewares/authMiddleware.js'; // Import authMiddleware
 
 const app = express();
 
@@ -12,9 +13,9 @@ const app = express();
 loadMiddlewares(app);
 
 // Registrar rutas
-app.use('/api/posts', postRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
+app.use('/api/auth', authRoutes); // Login no requiere token
+app.use('/api/posts', authMiddleware, postRoutes); // Middleware aquí
+app.use('/api/users', authMiddleware, userRoutes); // Middleware aquí
 
 // Middleware para manejo de errores (siempre después de las rutas)
 app.use((err, req, res, next) => {

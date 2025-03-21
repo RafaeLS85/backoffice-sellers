@@ -1,11 +1,11 @@
 import corsMiddleware from '../middlewares/corsMiddleware.js';
 import loggerMiddleware from '../middlewares/loggerMiddleware.js';
-import tokenMiddleware from '../middlewares/tokenMiddleware.js';
+import express from 'express'; // Import express
 
 const middlewares = [
+    express.json(), // Add express.json() here
     loggerMiddleware,
     corsMiddleware,
-    tokenMiddleware // Puedes añadir más middlewares aquí en el futuro
 ];
 
 export const loadMiddlewares = (app) => {

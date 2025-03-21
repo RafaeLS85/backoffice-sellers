@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const [cookies, setCookie] = useCookies(['token']); // Manejo de cookies
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -14,11 +16,20 @@ const Login: React.FC = () => {
       const response = await fetch('http://localhost:3000/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username, password }),
       });
 
       if (response.ok) {
-        // Si el login es exitoso, redirigir al backoffice
+        const data = await response.json();
+        const token = data.token;
+
+        // Configurar la cookie con el token
+        setCookie('token', token, {
+          path: '/', // Hacerla accesible en todas las rutas
+          httpOnly: false, // Solo para desarrollo
+        });
+
+        // Redirigir al usuario a una ruta protegida
         navigate('/posts');
       } else {
         const data = await response.json();
@@ -56,7 +67,10 @@ const Login: React.FC = () => {
             />
           </label>
         </div>
-        <button type="submit" style={{ padding: '10px 20px', backgroundColor: '#007BFF', color: '#fff', border: 'none', cursor: 'pointer' }}>
+        <button
+          type="submit"
+          style={{ padding: '10px 20px', backgroundColor: '#007BFF', color: '#fff', border: 'none', cursor: 'pointer' }}
+        >
           Iniciar Sesión
         </button>
       </form>

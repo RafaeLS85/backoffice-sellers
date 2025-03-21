@@ -1,26 +1,45 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
 import Login from './pages/Login';
 import Posts from './pages/Posts';
 import Users from './pages/Users';
-
-const isAuthenticated = () => {
-  // Verificar si la cookie del token existe
-  return document.cookie.includes('token=');
-};
+import Layout from './components/Layout'; // Import Layout
 
 const App: React.FC = () => {
+  const [cookies] = useCookies(['token']); // Leer la cookie del token
+
+  const isAuthenticated = () => {
+    return Boolean(cookies.token); // Verifica si el token existe
+  };
+
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route
           path="/posts"
-          element={isAuthenticated() ? <Posts /> : <Navigate to="/" />}
+          element={
+            isAuthenticated() ? (
+              <Layout>
+                <Posts />
+              </Layout>
+            ) : (
+              <Navigate to="/" />
+            )
+          }
         />
         <Route
           path="/users"
-          element={isAuthenticated() ? <Users /> : <Navigate to="/" />}
+          element={
+            isAuthenticated() ? (
+              <Layout>
+                <Users />
+              </Layout>
+            ) : (
+              <Navigate to="/" />
+            )
+          }
         />
       </Routes>
     </Router>

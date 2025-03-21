@@ -12,11 +12,9 @@ const devUser = {
 router.post('/login', (req, res) => {
     const { username, password } = req.body;
 
-    // Validar credenciales
     if (username === devUser.username && password === devUser.password) {
-        const token = generateToken({ username }); // Generar token
-        res.cookie('token', token, { httpOnly: true }); // Establecer cookie HTTP-only
-        return res.json({ message: 'Inicio de sesión exitoso' });
+        const token = generateToken({ username });
+        return res.json({ token }); // Devuelve el token
     }
 
     return res.status(401).json({ error: 'Credenciales inválidas' });

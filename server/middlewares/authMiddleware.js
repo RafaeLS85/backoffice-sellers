@@ -7,6 +7,7 @@ const authMiddleware = (req, res, next) => {
     console.log('Encabezado Authorization:', authHeader); // Agrega un log para depuración
 
     if (!authHeader) {
+        console.log('authMiddleware Token no proporcionado');
         return res.status(401).json({ error: 'Token no proporcionado' });
     }
 
@@ -14,6 +15,12 @@ const authMiddleware = (req, res, next) => {
 
     if (!token) {
         return res.status(401).json({ error: 'Token no proporcionado' });
+    }
+
+    // Aceptar un token estático en desarrollo
+    if (process.env.NODE_ENV === 'development' && token === DEV_TOKEN) {
+        console.log('Token de desarrollo aceptado');
+        return next();
     }
 
     try {

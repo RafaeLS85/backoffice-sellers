@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useCookies } from 'react-cookie';
 
 interface User {
   id: number;
@@ -9,11 +10,16 @@ interface User {
 const Users: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [cookies] = useCookies(['token']);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/users');
+        const response = await fetch('http://localhost:3000/api/users', {
+          headers: {
+            Authorization: `Bearer ${cookies.token}`,
+          },
+        });
         if (!response.ok) {
           throw new Error(`Error: ${response.status} ${response.statusText}`);
         }
@@ -23,9 +29,10 @@ const Users: React.FC = () => {
         setError(err.message);
       }
     };
-
-    fetchUsers();
-  }, []);
+    if (cookies.token) {
+        fetchUsers();
+    }
+  }, [cookies.token]);
 
   return (
     <div>
