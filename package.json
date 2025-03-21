@@ -1,0 +1,14 @@
+{
+    "name": "fullstack-project",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+      "start:client": "cd client && npm run dev",
+      "start:server": "cd server && node index.js",
+      "start": "concurrently \"npm run start:client\" \"npm run start:server\""
+    },
+    "devDependencies": {
+      "concurrently": "^7.0.0"
+    }
+  }
+  
